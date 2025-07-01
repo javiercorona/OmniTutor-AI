@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OmniTutor AI - Enhanced Edition</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .chat-message {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .engagement-high { background-color: #4ade80; }
+        .engagement-medium { background-color: #fbbf24; }
+        .engagement-low { background-color: #f87171; }
+        .progress-bar {
+            transition: width 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <div class="w-64 bg-indigo-800 text-white flex flex-col">
+            <div class="p-4 border-b border-indigo-700">
+                <h1 class="text-2xl font-bold">OmniTutor AI</h1>
+                <p class="text-indigo-200 text-sm">v6.0</p>
+            </div>
+            
+            <div class="p-4">
+                <div class="mb-6">
+                    <h2 class="text-lg font-semibold mb-2">Student Profile</h2>
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center mr-3">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div>
+                            <p id="student-name" class="font-medium">Loading...</p>
+                            <p id="student-level" class="text-xs text-indigo-300">Level: -</p>
+                        </div>
+                    </div>
+                    <div class="text-sm">
+                        <p>Progress: <span id="progress-percent">0</span>%</p>
+                        <div class="w-full bg-indigo-700 rounded-full h-2 mt-1">
+                            <div id="progress-bar" class="progress-bar bg-green-400 h-2 rounded-full" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <h2 class="text-lg font-semibold mb-2">Navigation</h2>
+                    <ul>
+                        <li class="mb-2">
+                            <button id="nav-dashboard" class="w-full text-left px-3 py-2 rounded hover:bg-indigo-700 bg-indigo-700">
+                                <i class="fas fa-home mr-2"></i> Dashboard
+                            </button>
+                        </li>
+                        <li class="mb-2">
+                            <button id="nav-lessons" class="w-full text-left px-3 py-2 rounded hover:bg-indigo-700">
+                                <i class="fas fa-book mr-2"></i> Lessons
+                            </button>
+                        </li>
+                        <li class="mb-2">
+                            <button id="nav-practice" class="w-full text-left px-3 py-2 rounded hover:bg-indigo-700">
+                                <i class="fas fa-pencil-alt mr-2"></i> Practice
+                            </button>
+                        </li>
+                        <li class="mb-2">
+                            <button id="nav-progress" class="w-full text-left px-3 py-2 rounded hover:bg-indigo-700">
+                                <i class="fas fa-chart-line mr-2"></i> Progress
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="mb-6">
+                    <h2 class="text-lg font-semibold mb-2">Subjects</h2>
+                    <ul>
+                        <li class="mb-2">
+                            <button class="subject-btn w-full text-left px-3 py-2 rounded hover:bg-indigo-700" data-subject="math">
+                                <i class="fas fa-square-root-alt mr-2"></i> Mathematics
+                            </button>
+                        </li>
+                        <li class="mb-2">
+                            <button class="subject-btn w-full text-left px-3 py-2 rounded hover:bg-indigo-700" data-subject="science">
+                                <i class="fas fa-flask mr-2"></i> Science
+                            </button>
+                        </li>
+                        <li class="mb-2">
+                            <button class="subject-btn w-full text-left px-3 py-2 rounded hover:bg-indigo-700" data-subject="coding">
+                                <i class="fas fa-code mr-2"></i> Coding
+                            </button>
+                        </li>
+                        <li class="mb-2">
+                            <button class="subject-btn w-full text-left px-3 py-2 rounded hover:bg-indigo-700" data-subject="creative">
+                                <i class="fas fa-paint-brush mr-2"></i> Creative
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="mt-auto p-4 border-t border-indigo-700">
+                <button id="settings-btn" class="text-indigo-200 hover:text-white">
+                    <i class="fas fa-cog mr-2"></i> Settings
+                </button>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Top Bar -->
+            <div class="bg-white border-b border-gray-200 p-4 flex justify-between items-center">
+                <h2 id="page-title" class="text-xl font-semibold">Dashboard</h2>
+                <div class="flex items-center">
+                    <div id="engagement-indicator" class="mr-4 flex items-center">
+                        <span class="text-sm text-gray-600 mr-2">Engagement:</span>
+                        <div class="w-24 h-2 rounded-full bg-gray-200">
+                            <div id="engagement-bar" class="h-2 rounded-full engagement-medium" style="width: 50%"></div>
+                        </div>
+                        <span id="engagement-text" class="text-xs ml-2">Medium</span>
+                    </div>
+                    <button id="help-btn" class="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm">
+                        <i class="fas fa-question-circle mr-1"></i> Help
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Page Content -->
+            <div class="flex-1 overflow-y-auto p-6">
+                <!-- Dashboard View -->
+                <div id="dashboard-view" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <h3 class="font-semibold text-lg mb-4">Continue Learning</h3>
+                            <div id="continue-learning" class="space-y-3">
+                                <p class="text-gray-500">No recent lessons</p>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <h3 class="font-semibold text-lg mb-4">Recommended Topics</h3>
+                            <div id="recommended-topics" class="space-y-3">
+                                <button class="topic-btn w-full text-left px-4 py-2 bg-indigo-50 rounded-lg hover:bg-indigo-100">
+                                    Introduction to Algebra
+                                </button>
+                                <button class="topic-btn w-full text-left px-4 py-2 bg-indigo-50 rounded-lg hover:bg-indigo-100">
+                                    Basic Chemistry
+                                </button>
+                                <button class="topic-btn w-full text-left px-4 py-2 bg-indigo-50 rounded-lg hover:bg-indigo-100">
+                                    Python Fundamentals
+                                </button>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <h3 class="font-semibold text-lg mb-4">Progress Overview</h3>
+                            <div id="progress-chart" class="h-40">
+                                <canvas id="progress-canvas"></canvas>
+                            </div>
+                            <div class="mt-4 text-center">
+                                <button id="view-full-progress" class="text-indigo-600 hover:text-indigo-800 text-sm">
+                                    View Full Progress Report <i class="fas fa-arrow-right ml-1"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="font-semibold text-lg mb-4">Recent Activity</h3>
+                        <div id="recent-activity" class="space-y-4">
+                            <div class="flex items-start">
+                                <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center mr-3 mt-1">
+                                    <i class="fas fa-book text-indigo-600"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium">No recent activity</p>
+                                    <p class="text-gray-500 text-sm">Start a lesson to see activity here</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Lessons View -->
+                <div id="lessons-view" class="hidden space-y-6">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="font-semibold text-lg">Interactive Lessons</h3>
+                            <div class="flex space-x-3">
+                                <button id="start-video-lesson" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">
+                                    <i class="fas fa-video mr-2"></i> Video Lesson
+                                </button>
+                                <button id="start-text-lesson" class="bg-white border border-indigo-600 text-indigo-600 px-4 py-2 rounded-lg hover:bg-indigo-50">
+                                    <i class="fas fa-book-open mr-2"></i> Text Lesson
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="lesson-topic" class="block text-sm font-medium text-gray-700 mb-1">Lesson Topic</label>
+                            <input type="text" id="lesson-topic" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" placeholder="Enter a topic you want to learn about">
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="lesson-subject" class="block text-sm font-medium text-gray-700 mb-1">Subject</label>
+                            <select id="lesson-subject" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="general">General Learning</option>
+                                <option value="math">Mathematics</option>
+                                <option value="science">Science</option>
+                                <option value="coding">Coding</option>
+                                <option value="creative">Creative Arts</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Lesson Mode</label>
+                            <div class="flex space-x-4">
+                                <label class="inline-flex items-center">
+                                    <input type="radio" name="lesson-mode" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500" value="guided" checked>
+                                    <span class="ml-2 text-gray-700">Guided</span>
+                                </label>
+                                <label class="inline-flex items-center">
+                                    <input type="radio" name="lesson-mode" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500" value="exploratory">
+                                    <span class="ml-2 text-gray-700">Exploratory</span>
+                                </label>
+                                <label class="inline-flex items-center">
+                                    <input type="radio" name="lesson-mode" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500" value="challenge">
+                                    <span class="ml-2 text-gray-700">Challenge</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div id="active-lesson-container" class="hidden mt-6">
+                            <div class="border rounded-lg overflow-hidden">
+                                <div class="bg-gray-50 p-4 border-b flex justify-between items-center">
+                                    <h4 id="active-lesson-title" class="font-medium">Active Lesson</h4>
+                                    <button id="end-lesson-btn" class="text-red-600 hover:text-red-800 text-sm">
+                                        <i class="fas fa-times mr-1"></i> End Lesson
+                                    </button>
+                                </div>
+                                <div id="lesson-content" class="p-4 h-96 overflow-y-auto bg-white">
+                                    <!-- Lesson content will be streamed here -->
+                                    <div id="lesson-welcome" class="text-center py-10">
+                                        <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                            <i class="fas fa-robot text-indigo-600 text-2xl"></i>
+                                        </div>
+                                        <h4 class="text-xl font-medium mb-2">Ready to Learn!</h4>
+                                        <p class="text-gray-600">Your lesson will appear here once you start.</p>
+                                    </div>
+                                </div>
+                                <div class="bg-gray-50 p-4 border-t">
+                                    <div class="flex space-x-3">
+                                        <button id="mic-btn" class="w-10 h-10 rounded-full bg-indigo-600 text-white flex items-center justify-center hover:bg-indigo-700">
+                                            <i class="fas fa-microphone"></i>
+                                        </button>
+                                        <button id="camera-btn" class="w-10 h-10 rounded-full bg-white border border-gray-300 text-gray-700 flex items-center justify-center hover:bg-gray-50">
+                                            <i class="fas fa-camera"></i>
+                                        </button>
+                                        <div class="flex-1">
+                                            <input type="text" id="lesson-input" class="w-full px-4 py-2 border border-gray-300 rounded-full focus:ring-indigo-500 focus:border-indigo-500" placeholder="Type your question or response...">
+                                        </div>
+                                        <button id="send-lesson-btn" class="px-4 py-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700">
+                                            <i class="fas fa-paper-plane"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="font-semibold text-lg mb-4">Lesson History</h3>
+                        <div id="lesson-history" class="space-y-3">
+                            <div class="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg">
+                                <div>
+                                    <p class="font-medium">No lesson history yet</p>
+                                    <p class="text-gray-500 text-sm">Completed lessons will appear here</p>
+                                </div>
+                                <button class="text-indigo-600 hover:text-indigo-800">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Practice View -->
+                <div id="practice-view" class="hidden">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="font-semibold text-lg mb-6">Practice Exercises</h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div class="border rounded-lg p-4 hover:border-indigo-300 hover:shadow-md transition">
+                                <div class="flex items-start mb-3">
+                                    <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center mr-3">
+                                        <i class="fas fa-brain text-indigo-600"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium">Flashcards</h4>
+                                        <p class="text-gray-500 text-sm">Test your recall with interactive flashcards</p>
+                                    </div>
+                                </div>
+                                <button class="w-full mt-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+                                    Start Flashcards
+                                </button>
+                            </div>
+                            
+                            <div class="border rounded-lg p-4 hover:border-indigo-300 hover:shadow-md transition">
+                                <div class="flex items-start mb-3">
+                                    <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center mr-3">
+                                        <i class="fas fa-question-circle text-green-600"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium">Quiz</h4>
+                                        <p class="text-gray-500 text-sm">Test your knowledge with a quick quiz</p>
+                                    </div>
+                                </div>
+                                <button class="w-full mt-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                                    Start Quiz
+                                </button>
+                            </div>
+                            
+                            <div class="border rounded-lg p-4 hover:border-indigo-300 hover:shadow-md transition">
+                                <div class="flex items-start mb-3">
+                                    <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                                        <i class="fas fa-code text-blue-600"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium">Coding Challenges</h4>
+                                        <p class="text-gray-500 text-sm">Practice coding with real-world problems</p>
+                                    </div>
+                                </div>
+                                <button class="w-full mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                                    Start Coding
+                                </button>
+                            </div>
+                            
+                            <div class="border rounded-lg p-4 hover:border-indigo-300 hover:shadow-md transition">
+                                <div class="flex items-start mb-3">
+                                    <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center mr-3">
+                                        <i class="fas fa-paint-brush text-purple-600"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium">Creative Exercises</h4>
+                                        <p class="text-gray-500 text-sm">Express yourself with creative prompts</p>
+                                    </div>
+                                </div>
+                                <button class="w-full mt-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
+                                    Start Creating
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h4 class="font-medium mb-3">Custom Practice</h4>
+                            <div class="flex space-x-3">
+                                <input type="text" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" placeholder="Enter a topic you want to practice">
+                                <button class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+                                    Generate Exercises
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Progress View -->
+                <div id="progress-view" class="hidden">
+                    <div class="bg-white rounded-lg shadow p-6 mb-6">
+                        <h3 class="font-semibold text-lg mb-6">Learning Progress</h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                            <div class="border rounded-lg p-4">
+                                <h4 class="font-medium mb-2">Mastery Level</h4>
+                                <div class="flex items-center">
+                                    <div class="w-16 h-16 mr-4">
+                                        <svg viewBox="0 0 36 36" class="circular-chart">
+                                            <path class="circle-bg" d="M18 2.0845
+                                                a 15.9155 15.9155 0 0 1 0 31.831
+                                                a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                                            <path class="circle" stroke-dasharray="60, 100" d="M18 2.0845
+                                                a 15.9155 15.9155 0 0 1 0 31.831
+                                                a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                                            <text x="18" y="20.5" class="percentage">60%</text>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="text-gray-500 text-sm">Overall mastery across all subjects</p>
+                                        <div class="mt-1">
+                                            <span class="inline-block w-3 h-3 rounded-full bg-indigo-600 mr-1"></span>
+                                            <span class="text-sm">Advanced: 25%</span>
+                                        </div>
+                                        <div>
+                                            <span class="inline-block w-3 h-3 rounded-full bg-indigo-400 mr-1"></span>
+                                            <span class="text-sm">Intermediate: 35%</span>
+                                        </div>
+                                        <div>
+                                            <span class="inline-block w-3 h-3 rounded-full bg-indigo-200 mr-1"></span>
+                                            <span class="text-sm">Beginner: 40%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="border rounded-lg p-4">
+                                <h4 class="font-medium mb-2">Time Spent</h4>
+                                <div class="flex items-center h-full">
+                                    <div class="w-16 h-16 mr-4">
+                                        <i class="fas fa-clock text-4xl text-indigo-600"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-2xl font-bold">12.5 <span class="text-lg">hours</span></p>
+                                        <p class="text-gray-500 text-sm">Total learning time</p>
+                                        <p class="text-sm mt-1"><span class="font-medium">This week:</span> 3.2 hours</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="border rounded-lg p-4">
+                                <h4 class="font-medium mb-2">Achievements</h4>
+                                <div class="flex items-center h-full">
+                                    <div class="w-16 h-16 mr-4">
+                                        <i class="fas fa-trophy text-4xl text-yellow-500"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-2xl font-bold">8 <span class="text-lg">earned</span></p>
+                                        <p class="text-gray-500 text-sm">Out of 25 possible</p>
+                                        <div class="flex mt-1">
+                                            <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                            <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                            <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                            <i class="fas fa-star text-gray-300 mr-1"></i>
+                                            <i class="fas fa-star text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <h4 class="font-medium mb-3">Subject Breakdown</h4>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subject</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mastery</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time Spent</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Activity</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="flex-shrink-0 h-10 w-10 bg-indigo-100 rounded-full flex items-center justify-center">
+                                                    <i class="fas fa-square-root-alt text-indigo-600"></i>
+                                                </div>
+                                                <div class="ml-4">
+                                                    <div class="text-sm font-medium text-gray-900">Mathematics</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">65%</div>
+                                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                                <div class="bg-indigo-600 h-2 rounded-full" style="width: 65%"></div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">4.2 hours</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">2 days ago</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <button class="text-indigo-600 hover:text-indigo-900">Practice</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="flex-shrink-0 h-10 w-10 bg-green-100 rounded-full flex items-center justify-center">
+                                                    <i class="fas fa-flask text-green-600"></i>
+                                                </div>
+                                                <div class="ml-4">
+                                                    <div class="text-sm font-medium text-gray-900">Science</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">45%</div>
+                                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                                <div class="bg-green-600 h-2 rounded-full" style="width: 45%"></div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">3.1 hours</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">1 week ago</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <button class="text-indigo-600 hover:text-indigo-900">Practice</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="flex-shrink-0 h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                                    <i class="fas fa-code text-blue-600"></i>
+                                                </div>
+                                                <div class="ml-4">
+                                                    <div class="text-sm font-medium text-gray-900">Coding</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">70%</div>
+                                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                                <div class="bg-blue-600 h-2 rounded-full" style="width: 70%"></div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">5.2 hours</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">Yesterday</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <button class="text-indigo-600 hover:text-indigo-900">Practice</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="font-semibold text-lg mb-4">Learning History</h3>
+                        <div class="border rounded-lg overflow-hidden">
+                            <div class="bg-gray-50 px-4 py-3 border-b flex justify-between items-center">
+                                <h4 class="font-medium">Recent Sessions</h4>
+                                <button class="text-sm text-indigo-600 hover:text-indigo-800">
+                                    View All
+                                </button>
+                            </div>
+                            <div class="divide-y divide-gray-200">
+                                <div class="px-4 py-3 hover:bg-gray-50">
+                                    <div class="flex justify-between">
+                                        <div>
+                                            <p class="font-medium">Introduction to Algebra</p>
+                                            <p class="text-sm text-gray-500">Mathematics • 45 minutes</p>
+                                        </div>
+                                        <div class="text-right">
+                                            <p class="text-sm">May 15, 2023</p>
+                                            <div class="flex items-center justify-end mt-1">
+                                                <span class="inline-block w-2 h-2 rounded-full bg-green-500 mr-1"></span>
+                                                <span class="text-xs text-gray-500">Completed</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="px-4 py-3 hover:bg-gray-50">
+                                    <div class="flex justify-between">
+                                        <div>
+                                            <p class="font-medium">Python Functions</p>
+                                            <p class="text-sm text-gray-500">Coding • 1 hour 15 minutes</p>
+                                        </div>
+                                        <div class="text-right">
+                                            <p class="text-sm">May 12, 2023</p>
+                                            <div class="flex items-center justify-end mt-1">
+                                                <span class="inline-block w-2 h-2 rounded-full bg-green-500 mr-1"></span>
+                                                <span class="text-xs text-gray-500">Completed</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="px-4 py-3 hover:bg-gray-50">
+                                    <div class="flex justify-between">
+                                        <div>
+                                            <p class="font-medium">Chemical Reactions</p>
+                                            <p class="text-sm text-gray-500">Science • 30 minutes</p>
+                                        </div>
+                                        <div class="text-right">
+                                            <p class="text-sm">May 10, 2023</p>
+                                            <div class="flex items-center justify-end mt-1">
+                                                <span class="inline-block w-2 h-2 rounded-full bg-yellow-500 mr-1"></span>
+                                                <span class="text-xs text-gray-500">In Progress</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="settings-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
+            <div class="border-b px-6 py-4 flex justify-between items-center">
+                <h3 class="text-lg font-semibold">Settings</h3>
+                <button id="close-settings" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Theme</label>
+                    <div class="flex space-x-4">
+                        <button class="theme-option px-4 py-2 border rounded-lg hover:border-indigo-500" data-theme="light">
+                            <i class="fas fa-sun mr-2"></i> Light
+                        </button>
+                        <button class="theme-option px-4 py-2 border rounded-lg hover:border-indigo-500" data-theme="dark">
+                            <i class="fas fa-moon mr-2"></i> Dark
+                        </button>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Notification Preferences</label>
+                    <div class="space-y-2">
+                        <label class="flex items-center">
+                            <input type="checkbox" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" checked>
+                            <span class="ml-2 text-sm text-gray-700">Lesson reminders</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" checked>
+                            <span class="ml-2 text-sm text-gray-700">Progress updates</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                            <span class="ml-2 text-sm text-gray-700">Promotional offers</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Learning Speed</label>
+                    <select class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                        <option>Slow and steady</option>
+                        <option selected>Balanced</option>
+                        <option>Fast-paced</option>
+                    </select>
+                </div>
+            </div>
+            <div class="border-t px-6 py-4 flex justify-end">
+                <button id="save-settings" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+                    Save Settings
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="help-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
+            <div class="border-b px-6 py-4 flex justify-between items-center">
+                <h3 class="text-lg font-semibold">Help & Support</h3>
+                <button id="close-help" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <div class="mb-4">
+                    <h4 class="font-medium mb-2">Getting Started</h4>
+                    <p class="text-sm text-gray-600 mb-4">
+                        Welcome to OmniTutor AI! Start by selecting a subject and topic you want to learn about. 
+                        You can choose between guided lessons or exploratory learning.
+                    </p>
+                </div>
+                <div class="mb-4">
+                    <h4 class="font-medium mb-2">Features</h4>
+                    <ul class="text-sm text-gray-600 space-y-2">
+                        <li class="flex items-start">
+                            <i class="fas fa-book text-indigo-500 mt-1 mr-2"></i>
+                            <span>Interactive lessons with real-time feedback</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-chart-line text-indigo-500 mt-1 mr-2"></i>
+                            <span>Detailed progress tracking and analytics</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-microphone text-indigo-500 mt-1 mr-2"></i>
+                            <span>Voice interaction for hands-free learning</span>
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-medium mb-2">Need more help?</h4>
+                    <button class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm">
+                        <i class="fas fa-envelope mr-2"></i> Contact Support
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Global variables
+        let currentSessionId = null;
+        let websocket = null;
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let videoStream = null;
+        let engagementInterval = null;
+        
+        // DOM Elements
+        const navButtons = {
+            dashboard: document.getElementById('nav-dashboard'),
+            lessons: document.getElementById('nav-lessons'),
+            practice: document.getElementById('nav-practice'),
+            progress: document.getElementById('nav-progress')
+        };
+        
+        const views = {
+            dashboard: document.getElementById('dashboard-view'),
+            lessons: document.getElementById('lessons-view'),
+            practice: document.getElementById('practice-view'),
+            progress: document.getElementById('progress-view')
+        };
+        
+        const pageTitle = document.getElementById('page-title');
+        const studentName = document.getElementById('student-name');
+        const studentLevel = document.getElementById('student-level');
+        const progressPercent = document.getElementById('progress-percent');
+        const progressBar = document.getElementById('progress-bar');
+        const engagementBar = document.getElementById('engagement-bar');
+        const engagementText = document.getElementById('engagement-text');
+        
+        // Initialize the dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load student data
+            loadStudentData();
+            
+            // Initialize navigation
+            setupNavigation();
+            
+            // Initialize modals
+            setupModals();
+            
+            // Initialize lesson controls
+            setupLessonControls();
+            
+            // Initialize practice buttons
+            setupPracticeControls();
+            
+            // Initialize progress chart
+            initProgressChart();
+            
+            // Generate a session ID if none exists
+            if (!currentSessionId) {
+                currentSessionId = generateSessionId();
+            }
+        });
+        
+        function loadStudentData() {
+            // In a real app, this would come from an API
+            studentName.textContent = 'Alex Johnson';
+            studentLevel.textContent = 'Level: Intermediate';
+            progressPercent.textContent = '65';
+            progressBar.style.width = '65%';
+            
+            // Simulate loading engagement data
+            updateEngagement(0.75);
+        }
+        
+        function setupNavigation() {
+            // Dashboard navigation
+            navButtons.dashboard.addEventListener('click', () => {
+                setActiveView('dashboard');
+            });
+            
+            navButtons.lessons.addEventListener('click', () => {
+                setActiveView('lessons');
+            });
+            
+            navButtons.practice.addEventListener('click', () => {
+                setActiveView('practice');
+            });
+            
+            navButtons.progress.addEventListener('click', () => {
+                setActiveView('progress');
+            });
+            
+            // Subject buttons
+            document.querySelectorAll('.subject-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const subject = this.getAttribute('data-subject');
+                    setActiveView('lessons');
+                    
+                    // Set the subject dropdown
+                    document.getElementById('lesson-subject').value = subject;
+                    
+                    // Highlight the selected subject
+                    document.querySelectorAll('.subject-btn').forEach(b => {
+                        b.classList.remove('bg-indigo-700');
+                    });
+                    this.classList.add('bg-indigo-700');
+                });
+            });
+        }
+        
+        function setActiveView(view) {
+            // Hide all views
+            Object.values(views).forEach(v => {
+                v.classList.add('hidden');
+            });
+            
+            // Show selected view
+            views[view].classList.remove('hidden');
+            
+            // Update active nav button
+            Object.values(navButtons).forEach(btn => {
+                btn.classList.remove('bg-indigo-700');
+            });
+            navButtons[view].classList.add('bg-indigo-700');
+            
+            // Update page title
+            pageTitle.textContent = view.charAt(0).toUpperCase() + view.slice(1);
+        }
+        
+        function setupModals() {
+            const settingsModal = document.getElementById('settings-modal');
+            const helpModal = document.getElementById('help-modal');
+            
+            // Settings modal
+            document.getElementById('settings-btn').addEventListener('click', () => {
+                settingsModal.classList.remove('hidden');
+            });
+            
+            document.getElementById('close-settings').addEventListener('click', () => {
+                settingsModal.classList.add('hidden');
+            });
+            
+            document.getElementById('save-settings').addEventListener('click', () => {
+                settingsModal.classList.add('hidden');
+                // In a real app, save settings to the server
+            });
+            
+            // Theme options
+            document.querySelectorAll('.theme-option').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const theme = this.getAttribute('data-theme');
+                    // In a real app, apply the selected theme
+                });
+            });
+            
+            // Help modal
+            document.getElementById('help-btn').addEventListener('click', () => {
+                helpModal.classList.remove('hidden');
+            });
+            
+            document.getElementById('close-help').addEventListener('click', () => {
+                helpModal.classList.add('hidden');
+            });
+        }
+        
+        function setupLessonControls() {
+            const startTextLessonBtn = document.getElementById('start-text-lesson');
+            const startVideoLessonBtn = document.getElementById('start-video-lesson');
+            const endLessonBtn = document.getElementById('end-lesson-btn');
+            const lessonContainer = document.getElementById('active-lesson-container');
+            const lessonWelcome = document.getElementById('lesson-welcome');
+            const lessonContent = document.getElementById('lesson-content');
+            const micBtn = document.getElementById('mic-btn');
+            const cameraBtn = document.getElementById('camera-btn');
+            const lessonInput = document.getElementById('lesson-input');
+            const sendLessonBtn = document.getElementById('send-lesson-btn');
+            
+            startTextLessonBtn.addEventListener('click', startLesson.bind(null, 'text'));
+            startVideoLessonBtn.addEventListener('click', startLesson.bind(null, 'video'));
+            endLessonBtn.addEventListener('click', endLesson);
+            
+            // Handle sending messages
+            sendLessonBtn.addEventListener('click', sendLessonMessage);
+            lessonInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendLessonMessage();
+                }
+            });
+            
+            // Microphone button
+            micBtn.addEventListener('click', toggleMicrophone);
+            
+            // Camera button
+            cameraBtn.addEventListener('click', toggleCamera);
+            
+            function startLesson(type) {
+                const topic = document.getElementById('lesson-topic').value;
+                const subject = document.getElementById('lesson-subject').value;
+                const mode = document.querySelector('input[name="lesson-mode"]:checked').value;
+                
+                if (!topic) {
+                    alert('Please enter a lesson topic');
+                    return;
+                }
+                
+                // Show lesson container
+                lessonContainer.classList.remove('hidden');
+                lessonWelcome.classList.add('hidden');
+                
+                // Initialize WebSocket connection
+                initializeWebSocket();
+                
+                // Start the lesson
+                const lessonData = {
+                    type: "start_lesson",
+                    topic: topic,
+                    subject: subject,
+                    mode: mode,
+                    student_id: "student_123", // In a real app, use actual student ID
+                    session_id: currentSessionId
+                };
+                
+                websocket.send(JSON.stringify(lessonData));
+                
+                // Start engagement monitoring
+                startEngagementMonitoring();
+                
+                // Update UI
+                document.getElementById('active-lesson-title').textContent = `Learning: ${topic}`;
+                
+                // Scroll to lesson container
+                lessonContainer.scrollIntoView({ behavior: 'smooth' });
+            }
+            
+            function endLesson() {
+                if (websocket) {
+                    websocket.send(JSON.stringify({ type: "end_lesson" }));
+                    websocket.close();
+                    websocket = null;
+                }
+                
+                // Stop media streams
+                stopMediaStreams();
+                
+                // Clear lesson content
+                lessonContent.innerHTML = '';
+                lessonWelcome.classList.remove('hidden');
+                lessonContainer.classList.add('hidden');
+                
+                // Stop engagement monitoring
+                stopEngagementMonitoring();
+            }
+            
+            function sendLessonMessage() {
+                const message = lessonInput.value.trim();
+                if (message && websocket) {
+                    // Add user message to chat
+                    addMessageToLesson('user', message);
+                    
+                    // Send to server
+                    websocket.send(JSON.stringify({
+                        type: "message",
+                        content: message,
+                        session_id: currentSessionId
+                    }));
+                    
+                    // Clear input
+                    lessonInput.value = '';
+                }
+            }
+            
+            function toggleMicrophone() {
+                if (mediaRecorder) {
+                    // Stop recording
+                    mediaRecorder.stop();
+                    mediaRecorder = null;
+                    micBtn.classList.remove('bg-red-600');
+                    micBtn.classList.add('bg-indigo-600');
+                    micBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+                } else {
+                    // Start recording
+                    navigator.mediaDevices.getUserMedia({ audio: true })
+                        .then(stream => {
+                            mediaRecorder = new MediaRecorder(stream);
+                            audioChunks = [];
+                            
+                            mediaRecorder.ondataavailable = event => {
+                                audioChunks.push(event.data);
+                            };
+                            
+                            mediaRecorder.onstop = async () => {
+                                const audioBlob = new Blob(audioChunks);
+                                const audioUrl = URL.createObjectURL(audioBlob);
+                                
+                                // In a real app, send this to the server for processing
+                                console.log('Audio recorded:', audioUrl);
+                                
+                                // For demo, just add a message
+                                addMessageToLesson('user', '[Audio message]');
+                            };
+                            
+                            mediaRecorder.start();
+                            micBtn.classList.remove('bg-indigo-600');
+                            micBtn.classList.add('bg-red-600');
+                            micBtn.innerHTML = '<i class="fas fa-stop"></i>';
+                        })
+                        .catch(err => {
+                            console.error('Error accessing microphone:', err);
+                            alert('Could not access microphone. Please check permissions.');
+                        });
+                }
+            }
+            
+            function toggleCamera() {
+                if (videoStream) {
+                    // Stop camera
+                    videoStream.getTracks().forEach(track => track.stop());
+                    videoStream = null;
+                    cameraBtn.classList.remove('bg-red-600');
+                    cameraBtn.classList.add('bg-white', 'border', 'border-gray-300', 'text-gray-700');
+                    cameraBtn.innerHTML = '<i class="fas fa-camera"></i>';
+                } else {
+                    // Start camera
+                    navigator.mediaDevices.getUserMedia({ video: true })
+                        .then(stream => {
+                            videoStream = stream;
+                            cameraBtn.classList.remove('bg-white', 'border', 'border-gray-300', 'text-gray-700');
+                            cameraBtn.classList.add('bg-red-600', 'text-white');
+                            cameraBtn.innerHTML = '<i class="fas fa-stop"></i>';
+                            
+                            // In a real app, you might display the video feed
+                        })
+                        .catch(err => {
+                            console.error('Error accessing camera:', err);
+                            alert('Could not access camera. Please check permissions.');
+                        });
+                }
+            }
+            
+            function addMessageToLesson(sender, content) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `chat-message mb-4 ${sender === 'user' ? 'text-right' : 'text-left'}`;
+                
+                const bubble = document.createElement('div');
+                bubble.className = `inline-block px-4 py-2 rounded-lg max-w-xs md:max-w-md lg:max-w-lg ${sender === 'user' ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-800'}`;
+                bubble.textContent = content;
+                
+                messageDiv.appendChild(bubble);
+                lessonContent.appendChild(messageDiv);
+                lessonContent.scrollTop = lessonContent.scrollHeight;
+            }
+            
+            function initializeWebSocket() {
+                if (websocket) return;
+                
+                // In development, use ws://localhost:8000/ws/lessons/
+                // In production, use wss://yourdomain.com/ws/lessons/
+                const wsUrl = `ws://localhost:8000/ws/lessons/${currentSessionId}`;
+                websocket = new WebSocket(wsUrl);
+                
+                websocket.onopen = () => {
+                    console.log('WebSocket connection established');
+                };
+                
+                websocket.onmessage = (event) => {
+                    const data = JSON.parse(event.data);
+                    
+                    if (data.type === "lesson_chunk") {
+                        addMessageToLesson('tutor', data.content);
+                    } else if (data.type === "engagement_update") {
+                        updateEngagement(data.attention_score);
+                    } else if (data.type === "error") {
+                        addMessageToLesson('system', `Error: ${data.message}`);
+                    }
+                };
+                
+                websocket.onclose = () => {
+                    console.log('WebSocket connection closed');
+                };
+                
+                websocket.onerror = (error) => {
+                    console.error('WebSocket error:', error);
+                    addMessageToLesson('system', 'Connection error. Please try again.');
+                };
+            }
+            
+            function startEngagementMonitoring() {
+                // Simulate engagement updates
+                engagementInterval = setInterval(() => {
+                    const randomChange = (Math.random() * 0.2) - 0.1; // -0.1 to +0.1
+                    const currentEngagement = parseFloat(engagementBar.style.width) / 100;
+                    let newEngagement = currentEngagement + randomChange;
+                    
+                    // Keep between 0 and 1
+                    newEngagement = Math.max(0, Math.min(1, newEngagement));
+                    
+                    updateEngagement(newEngagement);
+                    
+                    // In a real app, this would send actual audio/video data to the server
+                    if (websocket) {
+                        websocket.send(JSON.stringify({
+                            type: "engagement_check",
+                            session_id: currentSessionId
+                        }));
+                    }
+                }, 5000);
+            }
+            
+            function stopEngagementMonitoring() {
+                if (engagementInterval) {
+                    clearInterval(engagementInterval);
+                    engagementInterval = null;
+                }
+            }
+            
+            function stopMediaStreams() {
+                if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                    mediaRecorder.stop();
+                    mediaRecorder = null;
+                }
+                
+                if (videoStream) {
+                    videoStream.getTracks().forEach(track => track.stop());
+                    videoStream = null;
+                }
+                
+                // Reset buttons
+                micBtn.classList.remove('bg-red-600');
+                micBtn.classList.add('bg-indigo-600');
+                micBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+                
+                cameraBtn.classList.remove('bg-red-600');
+                cameraBtn.classList.add('bg-white', 'border', 'border-gray-300', 'text-gray-700');
+                cameraBtn.innerHTML = '<i class="fas fa-camera"></i>';
+            }
+        }
+        
+        function setupPracticeControls() {
+            // Practice buttons would be set up similarly to lesson controls
+            // In a real app, they would initiate different types of practice sessions
+        }
+        
+        function initProgressChart() {
+            const ctx = document.getElementById('progress-canvas').getContext('2d');
+            const chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Mastery Level',
+                        data: [30, 45, 40, 55, 60, 65],
+                        borderColor: '#4f46e5',
+                        backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+        }
+        
+        function updateEngagement(score) {
+            const percentage = Math.round(score * 100);
+            engagementBar.style.width = `${percentage}%`;
+            
+            // Update color and text based on score
+            if (score > 0.7) {
+                engagementBar.className = 'h-2 rounded-full engagement-high';
+                engagementText.textContent = 'High';
+            } else if (score > 0.4) {
+                engagementBar.className = 'h-2 rounded-full engagement-medium';
+                engagementText.textContent = 'Medium';
+            } else {
+                engagementBar.className = 'h-2 rounded-full engagement-low';
+                engagementText.textContent = 'Low';
+            }
+        }
+        
+        function generateSessionId() {
+            return 'session_' + Math.random().toString(36).substr(2, 9);
+        }
+    </script>
+</body>
+</html>
