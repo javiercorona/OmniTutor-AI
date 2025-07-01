@@ -70,8 +70,4 @@ We're currently accepting applications for our **2023-2024 Education Pilot Progr
 
 ---
 
-*"OmniTutor has transformed how I differentiate instruction in my diverse classroom."*  
-— Michael Johnson, High School STEM Teacher
-
-*"The engagement tracking helps me identify struggling students before they fall behind."*  
-— Dr. Lisa Park, University Professor
+*"OmniTutor 
