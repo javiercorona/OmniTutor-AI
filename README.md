@@ -1,73 +1,80 @@
-# OmniTutor AI - Next-Generation AI Learning Platform
+OmniTutor AI - Open Education Project
 
-![OmniTutor AI Banner](https://via.placeholder.com/1200x400?text=OmniTutor+AI+-+Personalized+Learning+for+All)
+![OmniTutor AI Demo](https://via.placeholder.com/800x400?text=OmniTutor+AI+Demo+GIF)
 
-## 🎯 Calling All Educators and Institutions!
+## 👋 Hello Educators, Researchers, and Developers!
 
-Are you looking to revolutionize learning in your classroom or institution? OmniTutor AI offers **free access** to education professionals seeking to enhance their teaching with AI-powered personalized learning.
+I'm Javier Corona, creator of OmniTutor AI - an open-source adaptive learning platform combining:
+- **AI tutoring** with personalized lesson plans
+- **Multimodal interaction** (text/voice/video)
+- **Real-time engagement analytics**
+- **Automated knowledge gap detection**
 
-## ✨ Why OmniTutor AI?
+## 🎯 Seeking Education Partners
 
-We're offering **complimentary access** to:
-- Teachers at all grade levels
+I'm offering **free implementation support** to:
+- Classroom teachers (K-12)
 - University professors
-- Educational nonprofit organizations
-- School districts and administrators
+- Education nonprofits
+- Curriculum developers
 - Education researchers
 
-## 🚀 Key Features
+## ✨ Why Contribute?
 
-| Feature | Benefit |
-|---------|---------|
-| **Adaptive Learning Paths** | Tailors content to each student's pace and level |
-| **Multimodal Instruction** | Supports text, audio, and visual learning |
-| **Real-Time Engagement Tracking** | Monitors student focus and adjusts accordingly |
-| **Automated Assessment** | Provides instant feedback and progress reports |
-| **24/7 Tutoring Support** | Students get help whenever they need it |
+| Educator Benefits | Technical Features |
+|-------------------|--------------------|
+| ✅ Free AI teaching assistant | 🚀 Python/FastAPI backend |
+| ✅ Automatic differentiation | 💬 WebSocket real-time chat |
+| ✅ Student progress dashboards | � Redis session management |
+| ✅ Multilingual support | 📊 Faiss vector search |
 
-## 🆓 Free for Education Professionals
+## 🆓 Get Started for Free
 
-We believe in the transformative power of AI in education. That's why we're offering:
+Education professionals can request setup assistance:
 
-- **Free accounts** for verified educators
-- **Priority support** for classroom implementations
-- **Customizable learning modules** for your curriculum
-- **Detailed analytics** to track student progress
-
-## 📧 Get Your Free Access
-
-Education professionals can request access by contacting:
-
-**Dr. Sarah Chen**  
-Director of Educational Partnerships  
-📧 [education@omnitutor.ai](mailto:tinyhouseshop@gmail.com)  
-📞 (555) 123-4567  
+**Contact:**  
+📧 [javier.corona@example.com](mailto:javier.corona@example.com)  
+🔗 [LinkedIn Profile](#)  
 
 Please include:
-1. Your name and position
-2. Institution name
-3. Brief description of how you plan to use OmniTutor AI
-4. Number of students you'd like to onboard
+1. Your educational role
+2. Target student group
+3. Preferred subjects/curriculum
 
-## 🌍 Our Mission
+## 🛠️ Technical Overview
 
-"To make personalized, AI-powered education accessible to every learner and educator worldwide."
+```python
+# Sample API endpoint
+@app.post("/lesson")
+async def create_lesson(lesson: LessonPlan):
+    """Generates personalized lesson content"""
+    return await tutor_agent.generate_lesson(
+        topic=lesson.topic,
+        level=lesson.level,
+        learning_style=lesson.style
+    )
+```
 
-## 📚 Supported Subjects
-- Mathematics (K-12 through College)
-- Sciences (Biology, Chemistry, Physics)
-- Computer Science & Programming
-- Language Arts & Creative Writing
-- Test Preparation (SAT, ACT, AP)
+## 📚 Current Modules
 
-## 💻 Technical Requirements
-- Web browser (Chrome, Firefox, Safari)
-- Internet connection
-- Optional: Microphone for voice interactions
+1. **Math Tutor** - Algebra through Calculus
+2. **Science Assistant** - Physics/Chemistry labs
+3. **Code Mentor** - Python/JavaScript tutoring
+4. **Language Coach** - Writing/ESL support
 
-## 📅 Pilot Program
-We're currently accepting applications for our **2023-2024 Education Pilot Program** with enhanced features and dedicated support for participating classrooms.
+## 🌱 How to Contribute
 
----
+Educators can help by:
+1. Testing with real classrooms
+2. Providing curriculum materials
+3. Suggesting pedagogical improvements
 
-*"OmniTutor 
+Developers can:
+```bash
+git clone https://github.com/javiercorona/omnitutor-ai.git
+cd omnitutor-ai
+pip install -r requirements.txt
+```
+
+## 📜 License
+MIT License - Free for educational use
