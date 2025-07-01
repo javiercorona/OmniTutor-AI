@@ -33,7 +33,7 @@ I'm offering **free implementation support** to:
 Education professionals can request setup assistance:
 
 **Contact:**  
-📧 [javier.corona@example.com](mailto:javier.corona@example.com)  
+📧 [javier.corona@example.com](mailto:tinyhouseshop@gmail.com)  
 🔗 [LinkedIn Profile](#)  
 
 Please include:
